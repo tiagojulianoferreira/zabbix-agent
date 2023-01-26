@@ -1,0 +1,9 @@
+- name: Garante a instalação e configuração do Zabbix Agent
+  hosts: webserver1
+  gather_facts: true
+  become: true
+  vars:
+    zabbix_server: zabbix.example.com
+    zabbix_version: 5.4
+  roles:
+    - zabbix-agent

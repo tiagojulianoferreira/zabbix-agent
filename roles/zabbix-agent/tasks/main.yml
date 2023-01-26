@@ -1,0 +1,4 @@
+---
+# tasks file for roles/zabbix-agent
+- name: "Garante a instalação e configuração do GLPI-Agent em {{ ansible_os_family }}"
+  include_tasks: "{{ ansible_os_family|lower }}.yml"

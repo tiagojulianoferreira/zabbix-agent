@@ -1,0 +1,23 @@
+- name: Download e install Repository
+  ansible.builtin.get_url:
+    url: 'https://repo.zabbix.com/zabbix/{{ zabbix_version }}/debian/pool/main/z/zabbix-release/zabbix-release_{{ zabbix_version}}-1%2Bdebian11_all.deb'
+    dest: '/tmp/zabbix{{ zabbix_version}}.deb'
+
+- name: Garante que o zabbix-agent está instalado
+  ansible.builtin.apt:
+   name: zabbix-agent
+   state: present
+   update_cache: true
+  notify: restart_zabbix
+  register: agent_install
+
+- name: Garante a configuração do zabbix-agent
+  template:
+    src: zabbix_agentd.conf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf
+    owner: root
+  notify: restart_zabbix
+
+- name: Gera chave PSK
+  include_tasks: utils.yml
+  

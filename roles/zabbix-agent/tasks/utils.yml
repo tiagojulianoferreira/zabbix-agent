@@ -1,0 +1,22 @@
+- name: Garante que o gnutls-bin está instalado (util para PSK)
+  ansible.builtin.apt:
+   name: gnutls-bin
+   state: present
+   update_cache: true
+  notify: restart_zabbix
+
+- name: Gera a chave PSK útil conexão segura com Zabbix Server
+  shell: |
+    psktool -u agent -p agent.psk -s 32
+    sed -i.bkp 's/agent://g' agent.psk
+    sudo chown -R zabbix:zabbix /etc/zabbix/agent.psk
+    cat agent.psk
+  args:
+    chdir: /etc/zabbix/
+  notify: restart_zabbix
+  register: psk_generate
+  when: agent_install.changed == true
+
+- debug:
+    msg: '{{ psk_generate.stdout_lines }}'
+  when: agent_install.changed == true
